@@ -8,6 +8,9 @@ const options = {
     legend: {
       position: 'top',
     },
+    customCanvasBackgroundColor: {
+      color: '#ffffff',
+    },
     title: {
       display: true,
       text: 'Tazas semanales',
@@ -44,7 +47,13 @@ const data = {
 function WeekCounter() {
 
   return (
-    <div style={{ width: "550px", height: "225px" }}>
+    <div style={{ 
+      width: "95%", 
+      height: "400px",  
+      display: "flex",
+      flexDirection: "column",
+      justifyItems: "center"
+      }}>
       <Line
         options={options}
         data={data}

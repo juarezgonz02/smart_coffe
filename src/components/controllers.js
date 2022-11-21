@@ -14,7 +14,7 @@ function Controllers() {
              
 }
   return (
-    <Box>
+    <Box sx={{ display: "flex", flexDirection:"column", alignItems: "center" }}>
         <Card onClick={switchState} variant="outlined" sx={`background-color: ${color}; width: 150px; text-align: center`}>
 
                <h3>

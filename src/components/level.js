@@ -15,6 +15,9 @@ const options = {
   resposive: true,
   aspectRatio: 3/5,
   plugin:{
+    customCanvasBackgroundColor: {
+      color: '#ffffff',
+    },
 
     legend:{
       display: false, 
@@ -71,7 +74,7 @@ function Level() {
   }
   
   return (
-    <div style={{ position: "relative", width: "275px", height: "250px" }}>
+    <div style={{ display:"flex", justifyContent:"center" , position: "relative", width: "275px", height: "250px" }}>
       <Bar 
       options={options} 
       data={data} />
