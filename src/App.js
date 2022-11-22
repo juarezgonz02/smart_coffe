@@ -55,25 +55,25 @@ function App() {
       [ fetch(`https://io.adafruit.com/api/v2/${counterTopic}/data`, {
       method: 'GET',
       headers: {
-        "X-AIO-Key": "aio_OUqh91BGVENrRRHKCHlOcPJTLYVj"
+        "X-AIO-Key": process.env.REACT_APP_AIO_KEY
       }}), 
 
       fetch(`https://io.adafruit.com/api/v2/${controllerTopic}/data`, {
       method: 'GET',
       headers: {
-        "X-AIO-Key": "aio_OUqh91BGVENrRRHKCHlOcPJTLYVj"
+        "X-AIO-Key": process.env.REACT_APP_AIO_KEY
       }}),
 
       fetch(`https://io.adafruit.com/api/v2/${tempTopic}/data`,{
         method: 'GET',
         headers: {
-          "X-AIO-Key": "aio_OUqh91BGVENrRRHKCHlOcPJTLYVj"
+          "X-AIO-Key": process.env.REACT_APP_AIO_KEY
         }}),
 
       fetch(`https://io.adafruit.com/api/v2/${tempTopic}/data`,{
         method: 'GET',
         headers: {
-          "X-AIO-Key": "aio_OUqh91BGVENrRRHKCHlOcPJTLYVj"
+          "X-AIO-Key": process.env.REACT_APP_AIO_KEY
         }})
     
     ])
@@ -104,7 +104,7 @@ function App() {
 
   const connectToMQTT=()=>{
 
-    const host = 'io.adafruit.com'
+    const host = process.env.REACT_APP_HOST
     const port = '443'
     const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
   
@@ -115,11 +115,20 @@ function App() {
       protocolVersion: 3,
       clean: true,
       connectTimeout: 4000,
-      username: 'Juarez00',
-      password: 'aio_OUqh91BGVENrRRHKCHlOcPJTLYVj',
+      username: process.env.REACT_APP_AIO_USER,
+      password: process.env.REACT_APP_AIO_KEY,
       reconnectPeriod: 0,
     })
-  
+    console.log({
+      clientId,
+      protocolId: 'MQIsdp',
+      protocolVersion: 3,
+      clean: true,
+      connectTimeout: 4000,
+      username: process.env.REACT_APP_AIO_USER,
+      password: process.env.REACT_APP_AIO_KEY,
+      reconnectPeriod: 0,
+    })
     client.on('connect', () => {
 
       setClient(client)
