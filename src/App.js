@@ -70,7 +70,7 @@ function App() {
           "X-AIO-Key": process.env.REACT_APP_AIO_KEY
         }}),
 
-      fetch(`https://io.adafruit.com/api/v2/${tempTopic}/data`,{
+      fetch(`https://io.adafruit.com/api/v2/${tankTopic}/data`,{
         method: 'GET',
         headers: {
           "X-AIO-Key": process.env.REACT_APP_AIO_KEY
@@ -108,7 +108,7 @@ function App() {
     const port = '443'
     const clientId = `mqtt_${Math.random().toString(16).slice(3)}`
   
-    const connectUrl = `mqtt://${host}:${port}`
+    const connectUrl = `wss://${host}:${port}`
     const client = mqtt.connect(connectUrl, {
       clientId,
       protocolId: 'MQIsdp',
