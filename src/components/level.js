@@ -45,19 +45,22 @@ const options = {
   }
 }
 
-function Level() {
+function Level({tanklevel}) {
   
-  const [level, updatelevel] = useState(0.33);
+  const [level, updatelevel] = useState(tanklevel);
 
   useEffect(() => {
-      if(level <= 0.33)
+
+    console.log("Nivel del tanque " + tanklevel)
+    updatelevel(parseFloat(tanklevel))
+    
+    if(level <= 0.33)
       updateColor("#a83232")
     else if(level < 0.66)
       updateColor("#a89a32")
     else if(level >= 0.66)
       updateColor("#32a852")
-  
-  }, [level])
+  }, [tanklevel])
   
   const [color, updateColor] = useState("rgba(255, 99, 132)");
 
@@ -74,10 +77,17 @@ function Level() {
   }
   
   return (
-    <div style={{ display:"flex", justifyContent:"center" , position: "relative", width: "275px", height: "250px" }}>
-      <Bar 
-      options={options} 
-      data={data} />
+    <div>
+      <h4>
+        {
+          `${level*100}%`
+        }
+      </h4>
+      <div style={{ display:"flex", justifyContent:"center" , position: "relative", width: "275px", height: "275px" }}>
+        <Bar 
+        options={options} 
+        data={data} />
+        </div>
       </div>
   )
 }

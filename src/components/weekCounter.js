@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React, { useEffect, useState } from 'react'
 import Chart from 'chart.js/auto'
 import { Line } from 'react-chartjs-2';
 
@@ -35,16 +35,24 @@ const labels = () => {
 
 let days = labels();
 
-const data = {
-  labels: days,
-  datasets: [{
-    label: 'Tazas por dia',
-    data: [12, 19, 3, 5, 2, 3, 7],
-    borderWidth: 1
-  }]
-}
 
-function WeekCounter() {
+function WeekCounter({allData}) {
+
+  const [cupsData, setData] = useState(allData)
+  
+  useEffect(() => {  
+    setData(allData)
+  }, [allData])
+  
+  const data = {
+    labels: days,
+    datasets: [{
+      label: 'Tazas por dia',
+      data: cupsData,
+      borderWidth: 1
+    }]
+  }
+
 
   return (
     <div style={{ 

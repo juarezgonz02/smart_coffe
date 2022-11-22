@@ -1,21 +1,38 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import {Box, Card} from '@mui/material'
 import WarnButton from './warnButton'
 
-function Controllers() {
-    const [{state, color, blocked}, turnOnOff] = useState({state: "OFF", color: "Red", blocked: false})
-    const switchState = () => {
+function Controllers({getLastData, controlState, action}) {
+    
+    const controllerTopic = "Juarez00/feeds/makerControllers"
+    const [{state, color, blocked}, turnOnOff] = useState(getLastData())
+
+     useEffect(()=>{
+            turnOnOff(getLastData());
+        
+     }, [controlState])
+
+    
+
+    /**
+     * Esto funciona correctamente
+     */
+    const switchState =  () => {
+
         if("OFF" == state) {   
+            action(controllerTopic, "ON")
             turnOnOff({state: "ON", color: "#0cff0c", blocked: true}) 
         }
         else {
+            action(controllerTopic, "OFF")
             turnOnOff({state: "OFF", color: "#ff0202",  blocked: false})
         }
+        
              
-}
+    }
   return (
     <Box sx={{ display: "flex", flexDirection:"column", alignItems: "center" }}>
-        <Card onClick={switchState} variant="outlined" sx={`background-color: ${color}; width: 150px; text-align: center`}>
+        <Card onClick={switchState} variant="outlined" sx={{backgroundColor: color, width: "150px", textAlign: "center"}}>
 
                <h3>
                  {state}

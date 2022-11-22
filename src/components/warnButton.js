@@ -24,7 +24,7 @@ function WarnButton({blocked}) {
                 }
             }
         } 
-        variant="outlined" sx={`margin-top: 25px; background-color: ${color}; width: 150px; text-align: center`}>
+        variant="outlined" sx={{marginTop: "25px", backgroundColor: color, width: "150px", textAlign: "center"}}>
                 <h3>
                  {state}
                 </h3>

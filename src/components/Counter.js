@@ -1,19 +1,22 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 import { useState } from 'react'
 import {Box, Chip} from "@mui/material/"
 import cup from "../assets/coffe_cup.svg"
 
 
-export default function Counter() {
+export default function Counter({count}) {
 
-  const [counter, updateCounter] = useState(0);
-  
+  const [counter, updateCounter] = useState(0)
+
+  useEffect(() => { 
+      updateCounter(count)
+   }, [count])
   return (
-    <Box variant="outlined" sx={"height: 150px; width: 150px; text-align: center"}>
+    <Box sx={{display: "flex", alignItems: "center", justifyContent: "space-between", flexDirection:"column", width: "150px", textAlign: "center"}}>
         <p>Hoy</p>
-        <p>
+        <div>
             <Chip label={`${counter}`} size='big' color='default' variant="outlined" />
-          </p> 
+          </div> 
         <img src={cup} width="100px" color="red" height="50px" ></img>
     </Box>
   )

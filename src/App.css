@@ -3,13 +3,16 @@
   flex-direction: column;
   text-align: left;
   height: 100%;
-
+  
 }
 h2{
   margin-bottom: 0;
 }
 .SUB {
+  width: 98%;
   display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
   flex-direction: row;
   text-align: left;
   height: 100%;
