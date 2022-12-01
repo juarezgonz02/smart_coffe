@@ -122,7 +122,7 @@ function App() {
     setTempActual(json3[0].value)
     setTankLevel(json4[0].value)
 
-    console.log(json[])
+    //console.log(json[])
     setAlarmData(json5[0].value)
   
 
