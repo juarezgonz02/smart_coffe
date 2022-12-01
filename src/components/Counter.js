@@ -2,9 +2,10 @@ import React, { useEffect } from 'react'
 import { useState } from 'react'
 import {Box, Chip} from "@mui/material/"
 import cup from "../assets/coffe_cup.svg"
+import tank from "../assets/coffe_tank.png"
 
+export default function Counter({label, icon, count}) {
 
-export default function Counter({count}) {
 
   const [counter, updateCounter] = useState(0)
 
@@ -17,7 +18,19 @@ export default function Counter({count}) {
         <div>
             <Chip label={`${counter}`} size='big' color='default' variant="outlined" />
           </div> 
-        <img src={cup} width="100px" color="red" height="50px" ></img>
+        { 
+          (()=>{
+
+            if(icon == "tank"){
+              return <img src={tank} width="auto" color="red" height="50px" ></img>
+                
+            }
+            else{
+                return <img src={cup} width="100px" color="red" height="50px" ></img>
+            
+            }
+            })()
+        }
     </Box>
   )
 }

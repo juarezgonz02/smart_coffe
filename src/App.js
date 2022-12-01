@@ -1,39 +1,60 @@
 import './App.css';
 import React, { createContext, useEffect, useState } from 'react';
 import { Box } from '@mui/material/' // Grid version 2
-import { Header, SideBar, Graph, Item } from "./aux"
-import { Temp, CofeeStatus, Controllers, Counter, WeekCounter, Level, Info } from './components'
+import { Header, SideBar, Graph as GraphBar, HorizontalBox, Item } from "./aux"
+import { Temp, CofeeStatus, Controllers, Alarm, Counter, WeekCounter, Level, Info } from './components'
 import mqtt from "mqtt"
 
 
 const counterTopic = "Juarez00/feeds/counter"
 const makerStateTopic = "Juarez00/feeds/makerstate"
+const makerAlarmTopic = "Juarez00/feeds/makeralarm"
 const controllerTopic = "Juarez00/feeds/makercontrollers"
 const tempTopic = "Juarez00/feeds/tempambiente"
 const tankTopic = "Juarez00/feeds/niveltanque"
+//const tankTopic = "Juarez00/feeds/niveltanque"5
 
 function App() {
   const [client, setClient] = useState(null);
   const [tanklevel, setTankLevel] = useState(0.0);
   const [makerState, setMakerState] = useState("Disconnected");
   const [lastData, setlastData] = useState("--/--/-- ----");
+  const [alarmData, setAlarmData] = useState("--/--/-- ----");
   
   const [counter, setCounter] = useState(0);
-  const [allData, setAllData] = useState([44,2,32,4,21,3,12]);
+  const [cupsAvainable, setCups] = useState(0);
+  const [allData, setAllData] = useState([0,3,0,2,4,0,0].reverse());
 
   const [temp, setTempActual] = useState(0);
   const [controllerState, setControllerState] = useState("OFF");
 
   const [connectStatus, setConnectStatus] = useState('Connect');
   
-  const publishToTopic = (topic, message) => {
-      client.publish(topic, message, { qos: 0, retain: false }, (error) => {
+  useEffect(() => { 
+    
+    let cups = 0
+
+    if(tanklevel>0.4){
+      cups = 1
+    }
+
+    if(tanklevel > 0.9){
+      cups = 2
+    }
+
+    setCups(cups)
+
+   }, [tanklevel]
+   )
+  const publishToTopic = async (topic, message) => {
+      client.publish(topic, message, { qos: 0, retain: false },async (error) => {
         if (error) {
           console.error(error)
+          
         }else{
-          console.log("Message Sent")
+          console.log(`Message Sent ${message}`)
           setlastData(new Date().toUTCString())
-
+          
         }})
   }
   const getLastData = () => {
@@ -51,7 +72,7 @@ function App() {
     return {state: state , color: color, blocked: blocked}
   } 
   const getActualValues = async () => {
-    let [res, res2, res3, res4] =  await Promise.all(
+    let [res, res2, res3, res4, res5] =  await Promise.all(
       [ fetch(`https://io.adafruit.com/api/v2/${counterTopic}/data`, {
       method: 'GET',
       headers: {
@@ -74,6 +95,12 @@ function App() {
         method: 'GET',
         headers: {
           "X-AIO-Key": process.env.REACT_APP_AIO_KEY
+        }}),
+
+      fetch(`https://io.adafruit.com/api/v2/${makerAlarmTopic}/data`,{
+        method: 'GET',
+        headers: {
+          "X-AIO-Key": process.env.REACT_APP_AIO_KEY
         }})
     
     ])
@@ -85,23 +112,66 @@ function App() {
     let json2 = await res2.json()
     
     let json3 = await res3.json()
+    
     let json4 = await res4.json()
+    
+    let json5 = await res5.json()
 
-    calculateCups(json.map((a) => new Date(a.created_at)))
+    calculateCups(json)
     setControllerState(json2[0].value)
     setTempActual(json3[0].value)
     setTankLevel(json4[0].value)
+
+    console.log(json[])
+    setAlarmData(json5[0].value)
+  
+
   }
   const calculateCups = (data) => { 
-    
-    console.log(data)
+    let thisDate = new Date(Date.now())
 
+    let thisDay = thisDate.getDate()
+    let thisMonth = thisDate.getMonth()+1
+
+    let today = `${thisDay}-${thisMonth}`
+    console.log(today)
+    
+    let processData = [0,3,0,2,4,0,0]
     /*Filtrar datos */
-    let processedData = data
+    let temp = thisDay, counter = 0;
+
+    data.forEach((e) => { 
+
+      let date = new Date(e.created_at)
+      let day = date.getDate()
+      let month = date.getMonth()+1 
+      let fullDate = `${day}-${month}`
+      console.log(fullDate)
+    
+
+      if(thisDay - day > 7 ){
+          return
+      }
+
+      if(fullDate == today){
+        counter += parseInt(e.value)
+        temp = day
+      }
+      else{
+        console.log("Dif"+(thisDay-day).toString())
+        processData[thisDay-temp] = counter
+        today = fullDate
+
+        counter = parseInt(e.value)
+      }
+     })
+
+     console.log(processData)
+     setCounter(processData[0])
+     setAllData(processData.reverse())
     //setAllData()
     
   }
-
   const connectToMQTT=()=>{
 
     const host = process.env.REACT_APP_HOST
@@ -156,6 +226,8 @@ function App() {
         console.log(`Subscribe to topic '${tempTopic}'`)
       })
 
+
+
     })
 
     client.on('message', (topic, payload) => {
@@ -165,8 +237,13 @@ function App() {
           setMakerState(payload.toString())
         break;
 
-        case counterTopic: 
-          setCounter(counter + parseInt(payload.toString()))
+        case counterTopic:
+          let newData = allData
+          newData[6] = parseInt(newData[6]) + parseInt(payload.toString())
+          console.log(newData)
+          setCounter(newData[6])
+          setAllData(newData)
+          
         break;
 
         case tankTopic: 
@@ -186,13 +263,7 @@ function App() {
       console.log('Received Message:', topic, payload.toString())
     })
   }
-  document.addEventListener("close",() => {
-    if (client) {
-      client.end(() => {
-        setConnectStatus('Connect')
-      })
-    }
-  })
+
   useEffect(() => {
     console.log("HELL")
 
@@ -225,7 +296,7 @@ function App() {
         }}>
           <h2> Información </h2>
           <Info
-            lastData={lastData}
+            lastData={parseInt(alarmData)}
             lastConection={lastData}
             makerState={makerState}
             serverState={connectStatus} />
@@ -240,12 +311,10 @@ function App() {
 
           <br></br>
 
-          <Item>
-            <h2> Nivel del tanque </h2>
-            <Box display={"flex"} justifyContent={"center"} >
-              <Level tanklevel={tanklevel}></Level>
-            </Box>
-          </Item>
+          <h2> Programación </h2>
+          <Alarm getLastData={getLastData} setData={setAlarmData} action={publishToTopic} />
+
+
 
         </SideBar>
 
@@ -258,17 +327,39 @@ function App() {
           </Item>
 
           <Item>
-            <h2> Tazas hechas </h2>
-            <Box style={{ margin: "auto", height: "150px" }} display={"flex"} justifyContent={"center"} >
-              <Counter count={counter}></Counter>
+            <h2> Nivel del tanque </h2>
+            <Box display={"flex"} justifyContent={"center"} >
+              <Level tanklevel={tanklevel}></Level>
             </Box>
           </Item>
 
+
         </SideBar>
 
-        <Graph>
+        
+        <GraphBar>
           <WeekCounter allData={allData}></WeekCounter>
-        </Graph>
+
+          <HorizontalBox>
+
+            <Item>
+              <h2> Tazas Disponibles </h2>
+              <Box style={{ margin: "auto", height: "150px" }} display={"flex"} justifyContent={"center"} >
+                <Counter icon="tank" label="Con el nivel actual" count={cupsAvainable}></Counter>
+              </Box>
+            </Item>
+
+            <Item>
+              <h2> Tazas hechas </h2>
+              <Box style={{ margin: "auto", height: "150px" }} display={"flex"} justifyContent={"center"} >
+                <Counter icon="cup" label="Hoy" count={counter}></Counter>
+              </Box>
+            </Item>
+
+
+          </HorizontalBox>
+        
+        </GraphBar>
       </div>
 
     </div>

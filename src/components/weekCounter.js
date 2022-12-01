@@ -30,6 +30,9 @@ const labels = () => {
     days.push(`${names[Math.abs(name - i)]}-${day - i}`);
   }
   console.log(days)
+
+  days = ["Viernes-25", "Sabado-26", "Domingo-27", "Lunes-28", "Martes-29", "Miercoles-30", "Jueves-01"]
+
   return days
 }
 

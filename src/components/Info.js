@@ -24,7 +24,7 @@ function Info({makerState, lastConection, serverState, lastData}) {
     return (
         <InfoHeader>
             
-            <Box style={{flexGrow: "1", maxWidth: "230px", display: "flex", flexDirection: "column" }}>
+            <Box style={{flexGrow: "1", maxWidth: "230px", marginLeft: "1em", display: "flex", flexDirection: "column", justifyContent: "end", alignItems: "baseline" }}>
                 <h3 style={{width: "150px"}}>
                     Estado conexión a la cafetera:
                 </h3>
@@ -35,7 +35,6 @@ function Info({makerState, lastConection, serverState, lastData}) {
 
             <Box style={{flexGrow: "1", maxWidth: "230px", marginLeft: "1em", display: "flex", flexDirection: "column", justifyContent: "end", alignItems: "baseline" }}>
                 <h3 style={{width: "120px"}}>
-
                     Ultima conexión
                 </h3>
                 <Chip label={lastConection} size='big' color='default' variant="outlined" />
@@ -53,16 +52,16 @@ function Info({makerState, lastConection, serverState, lastData}) {
 
             <Box style={{flexGrow: "1", maxWidth: "230px", marginLeft: "1em", display: "flex", flexDirection: "column", justifyContent: "end", alignItems: "baseline" }}>
                 <h3 style={{width: "120px"}}>
-                    Ultimo dato recibido
+                    Alarma establecida para
                 </h3>
-                <Chip label={lastData} size='big' color='default' variant="outlined" />
+                <Chip label={new Date(lastData).toUTCString()} size='big' color='warning' variant="outlined" />
             </Box>
-    
-            <Box flexGrow={"1"} display={"flex"} width="40%" justifyContent={"center"} >
-                <CofeeStatus></CofeeStatus>
+
+            <Box style={{flexGrow: "1", maxWidth: "230px", marginLeft: "1em", display: "flex", flexDirection: "column", justifyContent: "end", alignItems: "baseline" }}>
+                <CofeeStatus makerState={makerState}></CofeeStatus>
             </Box>
         </InfoHeader>
-    )
-}
+        )
+    }
 
 export default Info

@@ -97,4 +97,21 @@ import { Box, Paper } from '@mui/material/'; // Grid version 2
     color: theme.palette.text.primary,
   }));
 
-  export {Header, Item, Graph, SideBar}
+  const HorizontalBox = styled(Box)(({ theme }) => ({
+    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+    ...theme.typography.body2,
+    display: "flex",
+    flexDirection: "row", 
+    flexWrap: "wrap",
+    padding: theme.spacing(2),
+    textAlign: 'left',
+    margin: "1.5em",
+    paddingBottom: "1em",
+    borderRadius: "1.5em",
+    marginTop: "0",
+    width: "96%",
+    justifyContent: "space-around",
+    height: "auto",
+    color: theme.palette.text.primary,
+  }));
+  export {Header, Item, Graph, HorizontalBox, SideBar}
